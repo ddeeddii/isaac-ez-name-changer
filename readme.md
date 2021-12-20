@@ -1,7 +1,7 @@
 # Isaac Ez Name Changer
-This is a simple program that allows for easy creation of name replacement mods for The Binding of Isaac: Repentance
+This is a simple program that allows for easy creation of name replacement mods for The Binding of Isaac: Repentance.
  
-Currently supports: 
+Currently supports (for both items and trinkets): 
 - Changing item names
 - Changing item descriptions
 - Changing item sprites
