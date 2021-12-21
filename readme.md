@@ -14,7 +14,8 @@ Requirements: `Python`
 
 ## via Releases
 1. Download the latest release
-2. Run `main.exe`
+2. Unpack the entire `.zip` file somewhere
+3. Run `main.exe`
 
 Optional: Add to antivirus exclusions, as executables built with Pyinstaller can often be false flagged by antiviruses
 
