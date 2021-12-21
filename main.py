@@ -32,10 +32,12 @@ def createItem(isTrinket):
         string_Type = "trinket"
         string_Dir = "/resources/gfx/items/trinkets"
         string_Template = "templates/trinketTemplate.lua"
+        string_ItemFile = "trinkets.json"
     else:
         string_Type = "item"
         string_Dir = "/resources/gfx/items/collectibles"
         string_Template = "templates/itemTemplate.lua"
+        string_ItemFile = "items.json"
 
     #Open and load the template
     with open(string_Template, "r") as file:
@@ -78,18 +80,11 @@ def createItem(isTrinket):
         itemsDir = filePath + string_Dir
         os.makedirs(itemsDir)
 
-        if isTrinket:
-            with open("trinkets.json", "r") as itemFile:
-                jsondata = json.load(itemFile)
-                itemFile.close()
+        with open(string_ItemFile, "r") as itemFile:
+            jsondata = json.load(itemFile)
+            itemFile.close()
 
-            gfxName = jsondata[itemId]['gfx']
-        else:
-            with open("items.json", "r") as itemFile:
-                jsondata = json.load(itemFile)
-                itemFile.close()
-
-            gfxName = jsondata[itemId]['gfx']
+        gfxName = jsondata[itemId]['gfx']
 
         #Copy sprite to folder
         shutil.copyfile(spriteDir, itemsDir + "/" + gfxName)
