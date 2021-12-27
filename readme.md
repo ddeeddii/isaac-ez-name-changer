@@ -5,6 +5,7 @@ Currently supports (for both items and trinkets):
 - Changing item names
 - Changing item descriptions
 - Changing item sprites
+- Adding multiple item renames in a single mod
 
 # Usage
 ## via Cloning
@@ -26,5 +27,4 @@ Optional: Add to antivirus exclusions, as executables built with Pyinstaller can
 
 # Planned Features
 - GUI Version
-- Add multiple items in a single mod
 - Possibly changing costumes

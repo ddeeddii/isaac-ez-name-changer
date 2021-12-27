@@ -8,6 +8,9 @@ filetypes = (
     ('PNG Files', '*.png'),
 )
 
+def cls():
+    os.system('cls' if os.name=='nt' else 'clear')
+
 def parseId(id):
     if id.startswith("5.100"):
         newId = id.replace("5.100.", "")
@@ -22,12 +25,13 @@ def parseId(id):
         idInt = int(id)
     except ValueError as e:
         input("Item ID is not a number!")
-        exit()
+        os._exit(0)
 
     return id
         
 
-def createItem(isTrinket):
+def createItem(isTrinket, multiple, pathToFile):
+    cls()
     if isTrinket:
         string_Type = "trinket"
         string_Dir = "/resources/gfx/items/trinkets"
@@ -38,14 +42,26 @@ def createItem(isTrinket):
         string_Dir = "/resources/gfx/items/collectibles"
         string_Template = "templates/itemTemplate.lua"
         string_ItemFile = "items.json"
+    
+    if multiple:
+        string_FileOperation = "w" # overwrite
+    else:
+        string_FileOperation = "x" # create
 
     #Open and load the template
-    with open(string_Template, "r") as file:
-        filedata = file.read()
-        file.close()
+    if not multiple:
+        with open(string_Template, "r") as file:
+            filedata = file.read()
+            file.close()
+    else:
+        with open(pathToFile, "r") as file:
+            filedata = file.readlines()
+            file.close()
 
     #Ask user to specify replacement data
-    modname = '"' + str(input("What to call the mod?\n")) + '"'
+    if not multiple:
+        modname = '"' + str(input("What to call the mod?\n")) + '"'
+        
     itemId = parseId(str(input("What is the ID of the " + string_Type + " you want to replace? (search on wiki)\n")))
     newItemName = '"' + str(input("What do you want to call the new " + string_Type + "?\n")) + '"'
     newItemDesc = '"' + str(input("What do you want the new " + string_Type + " description to be?\n")) + '"'
@@ -58,17 +74,22 @@ def createItem(isTrinket):
         spriteAns = False
 
     #Replace template.lua data with user-specified data
-    filedata = filedata.replace("%MODNAME", modname)
-    filedata = filedata.replace("%ITEMID", itemId)
-    filedata = filedata.replace("%NEWITEMNAME", newItemName)
-    filedata = filedata.replace("%NEWDESCRIPTION", newItemDesc)
+    if not multiple:
+        filedata = filedata.replace("%MODNAME", modname)
+        filedata = filedata.replace("%ITEMID", itemId)
+        filedata = filedata.replace("%NEWITEMNAME", newItemName)
+        filedata = filedata.replace("%NEWDESCRIPTION", newItemDesc)
+    else:
+        itemEntry = "	" + "{" + itemId + "," + newItemName + "," + newItemDesc + "},\n"
+        filedata.insert(3, itemEntry)
 
     #Try creating the directory
-    try:
-        os.mkdir(filePath)
-    except OSError:
-        print("Creation of the directory %s failed" % filePath)
-        exit()
+    if not multiple:
+        try:
+            os.mkdir(filePath)
+        except OSError:
+            print("Creation of the directory %s failed" % filePath)
+            os._exit(0)
 
     if spriteAns:
         #Ask user for the item sprite
@@ -78,7 +99,8 @@ def createItem(isTrinket):
 
         #Create resources directory for the sprite
         itemsDir = filePath + string_Dir
-        os.makedirs(itemsDir)
+        if not multiple:
+            os.makedirs(itemsDir)
 
         with open(string_ItemFile, "r") as itemFile:
             jsondata = json.load(itemFile)
@@ -91,33 +113,56 @@ def createItem(isTrinket):
 
 
     #Save the new main.lua
-    newFile = open(filePath + "/" + "main.lua", "x")
-    newFile.write(filedata)
+    newFilePath = filePath + "/" + "main.lua"
+    newFile = open(newFilePath, string_FileOperation)
+    if not multiple:
+        newFile.write(filedata)
+    else:
+        newFile.writelines(filedata)
+
     newFile.close()
 
-    input("Succesfully created mod named " + modname + "!\nPress enter to exit.")
+    loopAns = input("Do you want to replace another " + string_Type + "? (y/n)\n")
+    if loopAns.lower() == "y":
+        createItem(isTrinket, True, newFilePath)
 
-# Ask user to select the mods folder
-print("Select the 'mods' directory where Isaac is installed:")
+    #Could've just removed the modname part...
+    if not multiple:
+        input("Succesfully created mod named " + modname + "!\nPress enter to exit.")
+        os._exit(0)
+    else:
+        input("Succesfully created mod!\nPress enter to exit.")
+        os._exit(0)
+    
+def askCreateItem():
+    trinketItemChoice = input("Do you want to replace an item ( 0 ) or a trinket? ( 1 )?\n")
+    if trinketItemChoice == "0":
+        createItem(False, False, "")
+    elif trinketItemChoice == "1":
+        createItem(True, False, "")
+    else:
+        input("Wrong choice!")
+        os._exit(0)
 
-root = tk.Tk()
-root.withdraw()
-modsPath = fd.askdirectory(title="Select the 'mods' directory where Isaac is installed")
+def initialize():
+    # Ask user to select the mods folder
+    print("Select the 'mods' directory where Isaac is installed:")
 
-mHead, mTail = os.path.split(modsPath)
-if mTail != "mods":
-    input("Path is incorrect! Make sure you selected the 'mods' folder in the place where Isaac is installed (where 'isaac-ng.exe' is)")
-    exit()
-#Ask user for the folder name of the mod
-folderName = str(input("What to call the folder that contains the mod?\n"))
-filePath = modsPath + "/" + folderName 
+    root = tk.Tk()
+    root.withdraw()
+    modsPath = fd.askdirectory(title="Select the 'mods' directory where Isaac is installed")
 
-trinketItemChoice = input("Do you want to replace an item ( 0 ) or a trinket? ( 1 )?\n")
+    mHead, mTail = os.path.split(modsPath)
+    if mTail != "mods":
+        input("Path is incorrect! Make sure you selected the 'mods' folder in the place where Isaac is installed (where 'isaac-ng.exe' is)")
+        os._exit(0)
+    #Ask user for the folder name of the mod
+    folderName = str(input("What to call the folder that contains the mod?\n"))
+    global filePath
+    filePath = modsPath + "/" + folderName 
 
-if trinketItemChoice == "0":
-    createItem(False)
-elif trinketItemChoice == "1":
-    createItem(True)
-else:
-    input("Wrong choice!")
-    exit()
+    cls()
+    askCreateItem()
+
+# Start the sequence
+initialize()
