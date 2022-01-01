@@ -26,5 +26,11 @@ Optional: Add to antivirus exclusions, as executables built with Pyinstaller can
 ](https://steamcommunity.com/sharedfiles/filedetails/?id=2606524433) which are the templates for the actual mod code
 
 # Planned Features
+- Save /mods/ location
+- Add support for translation strings (after they're added)
+- Add support for item & trinket changes in a single mod
+
+## Possible Features
+- Changing item specific files (costumes, sounds, etc.)
+- Automatic EID/Encyclopedia description replacing 
 - GUI Version
-- Possibly changing costumes
