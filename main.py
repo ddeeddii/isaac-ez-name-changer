@@ -24,8 +24,8 @@ def parseId(id):
     try:
         _ = int(id)
     except ValueError as e:
-        input("Item ID is not a number!")
-        # os._exit(0)
+        input("Item ID is not a number!\n")
+        return False
 
     return id
         
@@ -61,6 +61,8 @@ def createItem(isTrinket, multiple, pathToFile):
         modname = '"' + str(input("What to call the mod?\n")) + '"'
         
     itemId = parseId(str(input(f"What is the ID of the {string_Type} you want to replace? (search on wiki)\n")))
+    while itemId == False: # Ensure the item ID is correct
+        itemId = parseId(str(input(f"What is the ID of the {string_Type} you want to replace? (search on wiki)\n")))
     newItemName = '"' + str(input(f"What do you want to call the new {string_Type}?\n")) + '"'
     newItemDesc = '"' + str(input(f"What do you want the new {string_Type} description to be?\n")) + '"'
 
