@@ -22,10 +22,10 @@ def parseId(id):
         return newId
 
     try:
-        idInt = int(id)
+        _ = int(id)
     except ValueError as e:
         input("Item ID is not a number!")
-        os._exit(0)
+        # os._exit(0)
 
     return id
         
@@ -36,12 +36,12 @@ def createItem(isTrinket, multiple, pathToFile):
         string_Type = "trinket"
         string_Dir = "/resources/gfx/items/trinkets"
         string_Template = "templates/trinketTemplate.lua"
-        string_ItemFile = "trinkets.json"
+        string_ItemFile = "data/trinkets.json"
     else:
         string_Type = "item"
         string_Dir = "/resources/gfx/items/collectibles"
         string_Template = "templates/itemTemplate.lua"
-        string_ItemFile = "items.json"
+        string_ItemFile = "data/items.json"
     
     if multiple:
         string_FileOperation = "w" # overwrite
@@ -52,19 +52,17 @@ def createItem(isTrinket, multiple, pathToFile):
     if not multiple:
         with open(string_Template, "r") as file:
             filedata = file.read()
-            file.close()
     else:
         with open(pathToFile, "r") as file:
             filedata = file.readlines()
-            file.close()
 
     #Ask user to specify replacement data
     if not multiple:
         modname = '"' + str(input("What to call the mod?\n")) + '"'
         
-    itemId = parseId(str(input("What is the ID of the " + string_Type + " you want to replace? (search on wiki)\n")))
-    newItemName = '"' + str(input("What do you want to call the new " + string_Type + "?\n")) + '"'
-    newItemDesc = '"' + str(input("What do you want the new " + string_Type + " description to be?\n")) + '"'
+    itemId = parseId(str(input(f"What is the ID of the {string_Type} you want to replace? (search on wiki)\n")))
+    newItemName = '"' + str(input(f"What do you want to call the new {string_Type}?\n")) + '"'
+    newItemDesc = '"' + str(input(f"What do you want the new {string_Type} description to be?\n")) + '"'
 
     #Ask user if they want to include a sprite
     spriteAns = input("Add a sprite? (y/n)\n")
@@ -94,7 +92,7 @@ def createItem(isTrinket, multiple, pathToFile):
     if spriteAns:
         #Ask user for the item sprite
         input("Make sure the sprite is 32x32 and has a 32-bit depth! Press enter to continue.")
-        print("Open the file where the " + string_Type + " sprite is")
+        print(f"Open the file where the {string_Type} sprite is")
         spriteDir = fd.askopenfilename(title="Open the sprite", filetypes=filetypes)
 
         #Create resources directory for the sprite
@@ -104,45 +102,40 @@ def createItem(isTrinket, multiple, pathToFile):
 
         with open(string_ItemFile, "r") as itemFile:
             jsondata = json.load(itemFile)
-            itemFile.close()
 
         gfxName = jsondata[itemId]['gfx']
 
         #Copy sprite to folder
         shutil.copyfile(spriteDir, itemsDir + "/" + gfxName)
-
+        print("Sprite added!\n")
 
     #Save the new main.lua
     newFilePath = filePath + "/" + "main.lua"
-    newFile = open(newFilePath, string_FileOperation)
-    if not multiple:
-        newFile.write(filedata)
-    else:
-        newFile.writelines(filedata)
 
-    newFile.close()
+    with open(newFilePath, string_FileOperation) as newFile:
+        if not multiple:
+            newFile.write(filedata)
+        else:
+            newFile.writelines(filedata)
 
-    loopAns = input("Do you want to replace another " + string_Type + "? (y/n)\n")
+    loopAns = input(f"Do you want to replace another {string_Type}? (y/n)\n")
     if loopAns.lower() == "y":
         createItem(isTrinket, True, newFilePath)
 
-    #Could've just removed the modname part...
-    if not multiple:
-        input("Succesfully created mod named " + modname + "!\nPress enter to exit.")
-        os._exit(0)
-    else:
-        input("Succesfully created mod!\nPress enter to exit.")
-        os._exit(0)
+    input("Succesfully created mod!\nPress enter to exit.")
+    os._exit(0)
     
 def askCreateItem():
+    cls()
+
     trinketItemChoice = input("Do you want to replace an item ( 0 ) or a trinket? ( 1 )?\n")
     if trinketItemChoice == "0":
         createItem(False, False, "")
     elif trinketItemChoice == "1":
         createItem(True, False, "")
     else:
-        input("Wrong choice!")
-        os._exit(0)
+        input("Incorrect choice. Try again.")
+        askCreateItem()
 
 def initialize():
     # Ask user to select the mods folder
@@ -161,7 +154,6 @@ def initialize():
     global filePath
     filePath = modsPath + "/" + folderName 
 
-    cls()
     askCreateItem()
 
 # Start the sequence
