@@ -27,8 +27,8 @@ Optional: Add to antivirus exclusions, as executables built with Pyinstaller can
 
 # Planned Features
 - Save /mods/ location
-- Add support for translation strings (after they're added)
 - Add support for item & trinket changes in a single mod
+- Add support for other methods (editing items.xml, translation strings, etc.)
 
 ## Possible Features
 - Changing item specific files (costumes, sounds, etc.)
