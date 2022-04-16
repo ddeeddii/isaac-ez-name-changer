@@ -1,3 +1,5 @@
+# You can now a new, web version over at [ezitems-web](https://github.com/ddeeddii/ezitems-web)
+
 # Isaac Ez Name Changer
 This is a simple program that allows for easy creation of name replacement mods for The Binding of Isaac: Repentance.
  
